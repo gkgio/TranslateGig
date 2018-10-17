@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Translate</string>
+    <string name="yes">OK</string>
+
+    <string name="server_connect_timeout">Превышен лимит времени на запрос</string>
+    <string name="no_internet_connection">Отсутствует соединение с интернетом</string>
+    <string name="unexpected_error">Извините, произошла неизвестная ошибка</string>
+</resources>
