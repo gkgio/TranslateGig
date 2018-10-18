@@ -31,9 +31,9 @@ class SplashActivity : BaseActivity(), SplashView {
   override fun openTranslateActivity(languages: HashMap<String, String>) {
     val languagesMapType = object : TypeToken<HashMap<String, String>>() {}.type
     val languagesJsonString = Gson().toJson(languages, languagesMapType)
-    val intent = Intent()
+    val intent = Intent(this, TranslateActivity::class.java)
     intent.putExtra(TranslateActivity.ARG_LANGUAGES_AVAILABLE, languagesJsonString)
-    startActivity(Intent(this, TranslateActivity::class.java))
+    startActivity(intent)
     finish()
   }
 

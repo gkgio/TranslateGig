@@ -2,6 +2,7 @@ package com.gkgio.translate.features.translate.interactor
 
 import com.gkgio.translate.AndroidApplication
 import com.gkgio.translate.data.api.IService
+import com.gkgio.translate.data.api.REST
 import com.gkgio.translate.data.model.TranslateTextResponse
 import com.gkgio.translate.helpers.utils.Config
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -24,6 +25,7 @@ class TranslateInteractorImpl : TranslateInteractor {
   override fun fetchData(translateText: String, listener: TranslateInteractor.OnFetchTranslateListener) {
     compositeDisposable.add(iService.translate("", Config.API_KEY, translateText)
         .subscribeOn(Schedulers.io())
+        .compose(REST.getInstance().errorHandler.cast())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe({ translateTextResponse: TranslateTextResponse ->
           if (translateTextResponse.text != null)
@@ -32,7 +34,6 @@ class TranslateInteractorImpl : TranslateInteractor {
           listener.onErrorFetchingTranslateData(throwable)
         })
   }
-
 
   override fun clearDisposables() {
     compositeDisposable.clear()

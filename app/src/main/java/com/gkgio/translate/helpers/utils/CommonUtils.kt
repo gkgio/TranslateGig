@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment
 import android.util.Log
 import com.gkgio.translate.R
 import java.util.*
+import kotlin.collections.HashMap
 
 fun Activity.snackBar(text: String) = Snackbar.make(this.findViewById(android.R.id.content), text, Snackbar.LENGTH_SHORT)
 
@@ -37,7 +38,8 @@ fun isEmptyString(string: String?): Boolean {
   return string == null || string.isEmpty()
 }
 
-fun giveListRandomElement(listStrngs: List<String>): String {
-  val rand = Random()
-  return listStrngs[rand.nextInt(listStrngs.size)]
+fun giveHashMapRandomElement(mapLanguages: HashMap<String, String>): String? {
+  val languagesList = mapLanguages.keys.toTypedArray()
+  val key = languagesList[Random().nextInt(languagesList.size)]
+  return mapLanguages[key]
 }
