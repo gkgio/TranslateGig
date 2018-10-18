@@ -3,9 +3,9 @@ package com.gkgio.translate.data.api;
 import com.gkgio.translate.data.model.LanguagesResponse;
 import com.gkgio.translate.data.model.TranslateTextResponse;
 import com.gkgio.translate.di.scope.ActivityScope;
-import com.gkgio.translate.helpers.errorHandilng.ApiErrors;
-import com.gkgio.translate.helpers.errorHandilng.ErrorConverter;
-import com.gkgio.translate.helpers.errorHandilng.ErrorHandler;
+import com.gkgio.translate.helpers.errorHandling.ApiErrors;
+import com.gkgio.translate.helpers.errorHandling.ErrorConverter;
+import com.gkgio.translate.helpers.errorHandling.ErrorHandler;
 import com.gkgio.translate.helpers.utils.Config;
 
 import org.jetbrains.annotations.NotNull;

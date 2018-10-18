@@ -7,7 +7,7 @@ import com.gkgio.translate.data.api.REST
 import com.gkgio.translate.di.scope.ActivityScope
 import com.gkgio.translate.features.splash.interactor.SplashInteractorImpl
 import com.gkgio.translate.features.translate.interactor.TranslateInteractorImpl
-import com.gkgio.translate.helpers.errorHandilng.ApiErrors
+import com.gkgio.translate.helpers.errorHandling.ApiErrors
 
 @ActivityScope
 @Component(modules = arrayOf(AppModule::class))

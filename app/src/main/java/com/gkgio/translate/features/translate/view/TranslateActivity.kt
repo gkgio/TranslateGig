@@ -1,18 +1,27 @@
 package com.gkgio.translate.features.translate.view
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.gkgio.translate.R
 import com.gkgio.translate.base.BaseActivity
+import com.gkgio.translate.data.model.KeyValueItem
 import com.gkgio.translate.features.translate.presenter.TranslatePresenter
 import com.gkgio.translate.features.translate.presenter.TranslatePresenterImpl
-import com.gkgio.translate.helpers.SimpleTextWatcher
+import com.gkgio.translate.helpers.utils.closeKeyboard
 import com.gkgio.translate.helpers.utils.giveHashMapRandomElement
+import com.gkgio.translate.helpers.utils.showErrorAlertDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.jakewharton.rxbinding2.widget.RxTextView
 import java.util.*
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import java.util.concurrent.TimeUnit
+
 
 class TranslateActivity : BaseActivity(), TranslateView {
 
@@ -32,7 +41,13 @@ class TranslateActivity : BaseActivity(), TranslateView {
 
   private lateinit var translatePresenter: TranslatePresenter
 
+  private lateinit var compositeDisposable: CompositeDisposable
+
+  private var translateFromKeyValue: KeyValueItem = KeyValueItem("", "")
+  private var translateToKeyValue: KeyValueItem = KeyValueItem("", "")
+
   private fun init() {
+    compositeDisposable = CompositeDisposable()
     tvLanguageFrom = findViewById(R.id.tvLanguageFrom)
     tvLanguageTo = findViewById(R.id.tvLanguageTo)
     ivChangeLanguage = findViewById(R.id.ivChangeLanguage)
@@ -47,41 +62,65 @@ class TranslateActivity : BaseActivity(), TranslateView {
     super.onCreate(savedInstanceState)
     init()
 
+    val translateContainer: LinearLayout = findViewById(R.id.translateContainer)
+    translateContainer.setOnClickListener {
+      closeKeyboard(this)
+    }
+
     val languagesJsonString = intent.getStringExtra(ARG_LANGUAGES_AVAILABLE)
     val gson = Gson()
     val languagesMapType = object : TypeToken<HashMap<String, String>>() {}.type
     val languagesMap: HashMap<String, String> = gson.fromJson(languagesJsonString, languagesMapType)
-    val localeLanguage = Locale.getDefault().displayLanguage
-    val firstLanguageTranslate = languagesMap[localeLanguage.substring(0, 2).toLowerCase()]
+    val localeLanguage = Locale.getDefault().displayLanguage.substring(0, 2).toLowerCase()
+    val firstLanguageTranslate = languagesMap[localeLanguage]
     val iteratorMap = languagesMap.entries.iterator()
     if (firstLanguageTranslate != null) {
       tvLanguageFrom.text = firstLanguageTranslate
+      translateFromKeyValue.key = localeLanguage
+      translateFromKeyValue.value = firstLanguageTranslate
     } else {
       val entry = iteratorMap.next()
       tvLanguageFrom.text = entry.value
+      translateFromKeyValue.key = entry.key
+      translateFromKeyValue.value = entry.value
     }
 
-    val secondLanguageTranslate = giveHashMapRandomElement(languagesMap)
-    if (secondLanguageTranslate != null) {
-      tvLanguageTo.text = secondLanguageTranslate
-    } else {
-      val entry = iteratorMap.next()
-      tvLanguageTo.text = entry.value
-    }
+    translateToKeyValue = giveHashMapRandomElement(languagesMap)
+    tvLanguageTo.text = translateToKeyValue.value
 
-    translateFrom.addTextChangedListener(object : SimpleTextWatcher() {
-      override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-        if (s.toString().isNotEmpty()) {
-          translatePresenter.fetchData(s.toString())
-        }
-      }
-    })
+    compositeDisposable.add(RxTextView.textChanges(translateFrom)
+        .debounce(200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+        .subscribe { s ->
+          if (!s.isEmpty()) {
+            translatePresenter.fetchData(s.toString(),
+                String.format("%s-%s", translateFromKeyValue.key,
+                    translateToKeyValue.key))
+          }
+        })
+  }
+
+  override fun setTranslatedList(textList: List<String>) {
+    translateTo.text = textList[0]
+  }
+
+  override fun showErrorDialog(erorrMessage: String) {
+    showErrorAlertDialog(
+        this,
+        erorrMessage,
+        DialogInterface.OnClickListener { dialogInterface, i ->
+          //nothing do
+        })
+  }
+
+  override fun onStop() {
+    super.onStop()
+    closeKeyboard(this)
   }
 
   override fun onDestroy() {
     super.onDestroy()
     translatePresenter.onDestroy()
+    compositeDisposable.dispose()
   }
-
 
 }

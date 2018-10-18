@@ -56,6 +56,9 @@ dependencies {
     // rx
     implementation "io.reactivex.rxjava2:rxandroid:${rootProject.rxAndroid}"
 
+    // rxbinding
+    implementation "com.jakewharton.rxbinding2:rxbinding:${rootProject.rxBindingVersion}"
+
     //retrofit
     implementation "com.squareup.retrofit2:retrofit:${rootProject.retrofitVersion}"
     implementation "com.squareup.retrofit2:converter-gson:${rootProject.retrofitVersion}"
@@ -64,13 +67,10 @@ dependencies {
     //okhttp
     implementation "com.squareup.okhttp3:logging-interceptor:${rootProject.httpClientVersion}"
 
-    //progress
-    implementation 'me.zhanghai.android.materialprogressbar:library:1.4.2'
-
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
 
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 

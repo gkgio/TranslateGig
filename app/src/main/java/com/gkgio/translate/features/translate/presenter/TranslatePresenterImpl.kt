@@ -8,18 +8,17 @@ class TranslatePresenterImpl(translateView: TranslateView) : TranslatePresenter,
   private var translateView: TranslateView? = translateView
   private var translateInteractor: TranslateInteractor = TranslateInteractorImpl()
 
-  override fun fetchData(translateText: String) {
-    translateInteractor.fetchData(translateText, this)
+  override fun fetchData(translateText: String, translateLanguage: String) {
+    translateInteractor.fetchData(translateText, translateLanguage, this)
   }
 
-  override fun onSuccessFetchingTranslateData(text: List<String>) {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  override fun onSuccessFetchingTranslateData(textList: List<String>) {
+    translateView?.setTranslatedList(textList)
   }
 
   override fun onErrorFetchingTranslateData(error: Throwable) {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    translateView?.showErrorDialog(error.message ?: "")
   }
-
 
   override fun onDestroy() {
     translateView = null

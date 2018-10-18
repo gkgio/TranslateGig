@@ -30,4 +30,5 @@ ext {
     httpClientVersion = '3.11.0'
     retrofitVersion = '2.4.0'
     rxAndroid = '2.1.0'
+    rxBindingVersion = '2.1.1'
 }

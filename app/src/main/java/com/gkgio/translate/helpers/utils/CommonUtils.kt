@@ -2,11 +2,14 @@ package com.gkgio.translate.helpers.utils
 
 import android.app.Activity
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.DialogInterface
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import com.gkgio.translate.R
+import com.gkgio.translate.data.model.KeyValueItem
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -38,8 +41,23 @@ fun isEmptyString(string: String?): Boolean {
   return string == null || string.isEmpty()
 }
 
-fun giveHashMapRandomElement(mapLanguages: HashMap<String, String>): String? {
+fun giveHashMapRandomElement(mapLanguages: HashMap<String, String>): KeyValueItem {
   val languagesList = mapLanguages.keys.toTypedArray()
   val key = languagesList[Random().nextInt(languagesList.size)]
-  return mapLanguages[key]
+  val value = mapLanguages[key]
+  return KeyValueItem(key, value)
+}
+
+fun closeKeyboard(activity: Activity?) {
+  if (activity != null) {
+    val inputManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    if (inputManager.isActive) {
+      val focusedView = activity.currentFocus
+      if (focusedView != null) {
+        inputManager.hideSoftInputFromWindow(focusedView.windowToken,
+            InputMethodManager.HIDE_NOT_ALWAYS)
+        focusedView.clearFocus()
+      }
+    }
+  }
 }

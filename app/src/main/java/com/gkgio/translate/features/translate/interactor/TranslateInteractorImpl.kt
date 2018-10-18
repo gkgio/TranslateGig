@@ -22,8 +22,9 @@ class TranslateInteractorImpl : TranslateInteractor {
     compositeDisposable = CompositeDisposable()
   }
 
-  override fun fetchData(translateText: String, listener: TranslateInteractor.OnFetchTranslateListener) {
-    compositeDisposable.add(iService.translate("", Config.API_KEY, translateText)
+  override fun fetchData(translateText: String, translateLanguage: String,
+                         listener: TranslateInteractor.OnFetchTranslateListener) {
+    compositeDisposable.add(iService.translate(translateLanguage, Config.API_KEY, translateText)
         .subscribeOn(Schedulers.io())
         .compose(REST.getInstance().errorHandler.cast())
         .observeOn(AndroidSchedulers.mainThread())
