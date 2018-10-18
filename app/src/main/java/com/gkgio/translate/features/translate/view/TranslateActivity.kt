@@ -67,6 +67,17 @@ class TranslateActivity : BaseActivity(), TranslateView {
       closeKeyboard(this)
     }
 
+    ivChangeLanguage.setOnClickListener {
+      val tmpTranslateKeyValue = translateFromKeyValue
+      translateFromKeyValue = translateToKeyValue
+      translateToKeyValue = tmpTranslateKeyValue
+      tvLanguageFrom.text = translateFromKeyValue.value
+      tvLanguageTo.text = translateToKeyValue.value
+      if (!translateFrom.text.isEmpty()) {
+        getTranslateData(translateFrom.text.toString())
+      }
+    }
+
     val languagesJsonString = intent.getStringExtra(ARG_LANGUAGES_AVAILABLE)
     val gson = Gson()
     val languagesMapType = object : TypeToken<HashMap<String, String>>() {}.type
@@ -92,11 +103,17 @@ class TranslateActivity : BaseActivity(), TranslateView {
         .debounce(200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
         .subscribe { s ->
           if (!s.isEmpty()) {
-            translatePresenter.fetchData(s.toString(),
-                String.format("%s-%s", translateFromKeyValue.key,
-                    translateToKeyValue.key))
+            getTranslateData(s.toString())
+          } else {
+            translateTo.text = ""
           }
         })
+  }
+
+  private fun getTranslateData(text: String) {
+    translatePresenter.fetchData(text,
+        String.format("%s-%s", translateFromKeyValue.key,
+            translateToKeyValue.key))
   }
 
   override fun setTranslatedList(textList: List<String>) {
