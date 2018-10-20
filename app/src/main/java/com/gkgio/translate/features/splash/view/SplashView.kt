@@ -5,5 +5,5 @@ import java.util.HashMap
 interface SplashView {
   fun openTranslateActivity(languages: HashMap<String, String>)
 
-  fun showErrorDialog(erorrMessage: String)
+  fun showErrorDialog(errorMessage: String)
 }

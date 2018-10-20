@@ -3,8 +3,6 @@ package com.gkgio.translate.data.api;
 import com.gkgio.translate.data.model.LanguagesResponse;
 import com.gkgio.translate.data.model.TranslateTextResponse;
 import com.gkgio.translate.di.scope.ActivityScope;
-import com.gkgio.translate.helpers.errorHandling.ApiErrors;
-import com.gkgio.translate.helpers.errorHandling.ErrorConverter;
 import com.gkgio.translate.helpers.errorHandling.ErrorHandler;
 import com.gkgio.translate.helpers.utils.Config;
 
@@ -24,29 +22,23 @@ import retrofit2.Retrofit;
 public class REST implements IService {
     private final static String TAG = REST.class.toString();
 
-    private static REST sInstance;
+    private static REST instance;
 
-    private final ErrorConverter errorConverter;
     private final ErrorHandler errorHandler;
-    private final ApiErrors errors;
 
     private IService service;
 
     public static REST getInstance() {
-        return sInstance;
+        return instance;
     }
 
     public static void setInstance(REST instance) {
-        sInstance = instance;
+        REST.instance = instance;
     }
 
     @Inject
-    public REST(Retrofit retrofit, ErrorConverter errorConverter,
-                ErrorHandler errorHandler, ApiErrors errors) {
-        this.errorConverter = errorConverter;
+    public REST(Retrofit retrofit, ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
-        this.errors = errors;
-
         service = retrofit.create(IService.class);
     }
 

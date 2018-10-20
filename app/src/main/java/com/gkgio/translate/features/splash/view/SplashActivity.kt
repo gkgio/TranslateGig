@@ -37,10 +37,10 @@ class SplashActivity : BaseActivity(), SplashView {
     finish()
   }
 
-  override fun showErrorDialog(erorrMessage: String) {
+  override fun showErrorDialog(errorMessage: String) {
     showErrorAlertDialog(
         this,
-        erorrMessage,
+        errorMessage,
         DialogInterface.OnClickListener { dialogInterface, i ->
           //nothing do
         })

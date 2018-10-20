@@ -21,10 +21,10 @@ import java.util.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
-class TranslateActivity : BaseActivity(), TranslateView {
-
+class TranslateActivity : BaseActivity(), TranslateView, FullBottomSheetDialogFragment.BottomSheetViewCallback {
   companion object {
     const val ARG_LANGUAGES_AVAILABLE = "LANGUAGES_AVAILABLE"
   }
@@ -45,6 +45,8 @@ class TranslateActivity : BaseActivity(), TranslateView {
 
   private var translateFromKeyValue: KeyValueItem = KeyValueItem("", "")
   private var translateToKeyValue: KeyValueItem = KeyValueItem("", "")
+
+  private var languagesMap: HashMap<String, String>? = null
 
   private fun init() {
     compositeDisposable = CompositeDisposable()
@@ -81,33 +83,73 @@ class TranslateActivity : BaseActivity(), TranslateView {
     val languagesJsonString = intent.getStringExtra(ARG_LANGUAGES_AVAILABLE)
     val gson = Gson()
     val languagesMapType = object : TypeToken<HashMap<String, String>>() {}.type
-    val languagesMap: HashMap<String, String> = gson.fromJson(languagesJsonString, languagesMapType)
-    val localeLanguage = Locale.getDefault().displayLanguage.substring(0, 2).toLowerCase()
-    val firstLanguageTranslate = languagesMap[localeLanguage]
-    val iteratorMap = languagesMap.entries.iterator()
-    if (firstLanguageTranslate != null) {
-      tvLanguageFrom.text = firstLanguageTranslate
-      translateFromKeyValue.key = localeLanguage
-      translateFromKeyValue.value = firstLanguageTranslate
-    } else {
-      val entry = iteratorMap.next()
-      tvLanguageFrom.text = entry.value
-      translateFromKeyValue.key = entry.key
-      translateFromKeyValue.value = entry.value
+    languagesMap = gson.fromJson(languagesJsonString, languagesMapType)
+
+    val languagesMap = languagesMap
+    if (languagesMap != null) {
+      val localeLanguage = Locale.getDefault().displayLanguage.substring(0, 2).toLowerCase()
+      val firstLanguageTranslate = languagesMap[localeLanguage]
+      val iteratorMap = languagesMap.entries.iterator()
+      if (firstLanguageTranslate != null) {
+        tvLanguageFrom.text = firstLanguageTranslate
+        translateFromKeyValue.key = localeLanguage
+        translateFromKeyValue.value = firstLanguageTranslate
+      } else {
+        val entry = iteratorMap.next()
+        tvLanguageFrom.text = entry.value
+        translateFromKeyValue.key = entry.key
+        translateFromKeyValue.value = entry.value
+      }
+
+      translateToKeyValue = giveHashMapRandomElement(languagesMap)
+      tvLanguageTo.text = translateToKeyValue.value
+
+      compositeDisposable.add(RxTextView.textChanges(translateFrom)
+          .debounce(200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+          .subscribe { s ->
+            if (!s.isEmpty()) {
+              getTranslateData(s.toString())
+            } else {
+              translateTo.text = ""
+            }
+          })
     }
 
-    translateToKeyValue = giveHashMapRandomElement(languagesMap)
-    tvLanguageTo.text = translateToKeyValue.value
+    tvLanguageFrom.setOnClickListener {
+      openLanguageSelectingDialog(true)
+    }
 
-    compositeDisposable.add(RxTextView.textChanges(translateFrom)
-        .debounce(200, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-        .subscribe { s ->
-          if (!s.isEmpty()) {
-            getTranslateData(s.toString())
-          } else {
-            translateTo.text = ""
-          }
-        })
+    tvLanguageTo.setOnClickListener {
+      openLanguageSelectingDialog(false)
+    }
+  }
+
+  private fun openLanguageSelectingDialog(isFromLanguage: Boolean) {
+    val languagesMap = languagesMap
+    if (languagesMap != null) {
+      val listKeyValue: ArrayList<KeyValueItem> = ArrayList()
+      languagesMap.forEach { (key, value) ->
+        listKeyValue.add(KeyValueItem(key, value))
+      }
+      val gson = Gson()
+      val keyValueListString = gson.toJson(listKeyValue)
+      val fullBottomSheetDialogFragment = FullBottomSheetDialogFragment
+          .getInstance(keyValueListString, isFromLanguage, this, supportFragmentManager)
+      fullBottomSheetDialogFragment.show(supportFragmentManager, "dialogSheet")
+    }
+  }
+
+  override fun clickItemSelectLanguage(keyValueItem: KeyValueItem, isFromLanguage: Boolean) {
+    if (isFromLanguage) {
+      tvLanguageFrom.text = keyValueItem.value
+      translateFromKeyValue = keyValueItem
+    } else {
+      tvLanguageTo.text = keyValueItem.value
+      translateToKeyValue = keyValueItem
+    }
+    if (!translateFrom.text.isEmpty()) {
+      getTranslateData(translateFrom.text.toString())
+    }
   }
 
   private fun getTranslateData(text: String) {
@@ -120,10 +162,10 @@ class TranslateActivity : BaseActivity(), TranslateView {
     translateTo.text = textList[0]
   }
 
-  override fun showErrorDialog(erorrMessage: String) {
+  override fun showErrorDialog(errorMessage: String) {
     showErrorAlertDialog(
         this,
-        erorrMessage,
+        errorMessage,
         DialogInterface.OnClickListener { dialogInterface, i ->
           //nothing do
         })
