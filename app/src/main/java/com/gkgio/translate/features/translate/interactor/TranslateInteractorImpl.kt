@@ -26,7 +26,7 @@ class TranslateInteractorImpl : TranslateInteractor {
                          listener: TranslateInteractor.OnFetchTranslateListener) {
     compositeDisposable.add(iService.translate(translateLanguage, Config.API_KEY, translateText)
         .subscribeOn(Schedulers.io())
-        .compose(REST.getInstance().errorHandler.cast())
+        .compose(REST.instance.errorHandler.cast())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe({ translateTextResponse: TranslateTextResponse ->
           if (translateTextResponse.text != null)

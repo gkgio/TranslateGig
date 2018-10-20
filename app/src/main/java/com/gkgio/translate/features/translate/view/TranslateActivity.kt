@@ -2,17 +2,18 @@ package com.gkgio.translate.features.translate.view
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.MotionEvent
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import com.gkgio.translate.R
 import com.gkgio.translate.base.BaseActivity
 import com.gkgio.translate.data.model.KeyValueItem
 import com.gkgio.translate.features.translate.presenter.TranslatePresenter
 import com.gkgio.translate.features.translate.presenter.TranslatePresenterImpl
-import com.gkgio.translate.helpers.utils.closeKeyboard
 import com.gkgio.translate.helpers.utils.giveHashMapRandomElement
+import com.gkgio.translate.helpers.utils.hideKeyboard
+
 import com.gkgio.translate.helpers.utils.showErrorAlertDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -63,11 +64,6 @@ class TranslateActivity : BaseActivity(), TranslateView, FullBottomSheetDialogFr
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     init()
-
-    val translateContainer: LinearLayout = findViewById(R.id.translateContainer)
-    translateContainer.setOnClickListener {
-      closeKeyboard(this)
-    }
 
     ivChangeLanguage.setOnClickListener {
       val tmpTranslateKeyValue = translateFromKeyValue
@@ -124,6 +120,26 @@ class TranslateActivity : BaseActivity(), TranslateView, FullBottomSheetDialogFr
     }
   }
 
+  override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+    val view = currentFocus
+
+    if (view is EditText) {
+      val focus = currentFocus
+      if (focus != null) {
+        val scrcoords = IntArray(2)
+        focus.getLocationOnScreen(scrcoords)
+        val x = event.rawX + focus.left - scrcoords[0]
+        val y = event.rawY + focus.top - scrcoords[1]
+
+        if (event.action == MotionEvent.ACTION_UP && (x < focus.left || x >= focus.right
+                || y < focus.top || y > focus.bottom)) {
+          hideKeyboard()
+        }
+      }
+    }
+    return super.dispatchTouchEvent(event)
+  }
+
   private fun openLanguageSelectingDialog(isFromLanguage: Boolean) {
     val languagesMap = languagesMap
     if (languagesMap != null) {
@@ -173,7 +189,7 @@ class TranslateActivity : BaseActivity(), TranslateView, FullBottomSheetDialogFr
 
   override fun onStop() {
     super.onStop()
-    closeKeyboard(this)
+    hideKeyboard()
   }
 
   override fun onDestroy() {

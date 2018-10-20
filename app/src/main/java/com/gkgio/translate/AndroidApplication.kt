@@ -26,6 +26,6 @@ class AndroidApplication : Application() {
   }
 
   private fun initREST() {
-    REST.setInstance(appComponent.api())
+    REST.instance = appComponent.api()
   }
 }

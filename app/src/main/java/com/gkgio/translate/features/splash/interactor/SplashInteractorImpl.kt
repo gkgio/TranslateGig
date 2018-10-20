@@ -26,7 +26,7 @@ class SplashInteractorImpl : SplashInteractor {
   override fun fetchData(listener: SplashInteractor.OnFetchTranslateListener) {
     compositeDisposable.add(iService.getLangs(Config.API_KEY, Locale.getDefault().displayLanguage)
         .subscribeOn(Schedulers.io())
-        .compose(REST.getInstance().errorHandler.cast())
+        .compose(REST.instance.errorHandler.cast())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe({ languagesResponse: LanguagesResponse ->
           val languages: HashMap<String, String>? = languagesResponse.langs

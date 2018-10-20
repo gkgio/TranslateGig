@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.util.Log
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.gkgio.translate.R
 import com.gkgio.translate.data.model.KeyValueItem
@@ -48,16 +49,17 @@ fun giveHashMapRandomElement(mapLanguages: HashMap<String, String>): KeyValueIte
   return KeyValueItem(key, value)
 }
 
-fun closeKeyboard(activity: Activity?) {
-  if (activity != null) {
-    val inputManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    if (inputManager.isActive) {
-      val focusedView = activity.currentFocus
-      if (focusedView != null) {
-        inputManager.hideSoftInputFromWindow(focusedView.windowToken,
-            InputMethodManager.HIDE_NOT_ALWAYS)
-        focusedView.clearFocus()
-      }
-    }
+fun Activity?.hideKeyboard() {
+  val view = this?.currentFocus
+  if (view != null) {
+    val imm = this?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    imm?.hideSoftInputFromWindow(view.windowToken,  InputMethodManager.HIDE_NOT_ALWAYS)
+  }
+}
+
+fun Activity?.hideKeyboard(view: View?) {
+  if (view != null) {
+    val imm = this?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    imm?.hideSoftInputFromWindow(view.windowToken,  InputMethodManager.HIDE_NOT_ALWAYS)
   }
 }
