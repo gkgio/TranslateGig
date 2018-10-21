@@ -11,8 +11,7 @@ import android.view.View
 
 import com.gkgio.translate.R
 import com.gkgio.translate.data.model.KeyValueItem
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.gkgio.translate.helpers.utils.keyValueItemsFromJson
 
 
 class FullBottomSheetDialogFragment : BottomSheetDialogFragment() {
@@ -56,9 +55,7 @@ class FullBottomSheetDialogFragment : BottomSheetDialogFragment() {
       isFromLanguage = arguments.getBoolean(ARG_IS_FROM_LANGUAGE)
       val keyValueListString = arguments.getString(ARG_KEY_VALUE_ITEMS_LIST)
       if (keyValueListString != null) {
-        val gson = Gson()
-        val keyValueListType = object : TypeToken<List<KeyValueItem>>() {}.type
-        val keyValueList = gson.fromJson<List<KeyValueItem>>(keyValueListString, keyValueListType)
+        val keyValueList= keyValueItemsFromJson(keyValueListString)
         val recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(context)

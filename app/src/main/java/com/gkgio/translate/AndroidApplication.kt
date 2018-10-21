@@ -5,6 +5,7 @@ import com.gkgio.translate.data.api.REST
 import com.gkgio.translate.di.component.AppComponent
 import com.gkgio.translate.di.component.DaggerAppComponent
 import com.gkgio.translate.di.module.AppModule
+import com.gkgio.translate.di.module.RoomModule
 
 class AndroidApplication : Application() {
 
@@ -22,6 +23,7 @@ class AndroidApplication : Application() {
   private fun initDagger() {
     appComponent = DaggerAppComponent.builder()
         .appModule(AppModule(this))
+        .roomModule(RoomModule(this))
         .build()
   }
 

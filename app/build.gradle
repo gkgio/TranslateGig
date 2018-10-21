@@ -3,7 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
 
     lintOptions {
         checkReleaseBuilds false
@@ -12,10 +13,13 @@ android {
 
     defaultConfig {
         applicationId "com.gkgio.translate"
-        minSdkVersion 18
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "API_URL", "\"https://translate.yandex.net/api/v1.5/tr.json/\""
@@ -52,6 +56,11 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:${rootProject.daggerVersion}"
     kapt "com.google.dagger:dagger-compiler:${rootProject.daggerVersion}"
     kapt "com.google.dagger:dagger-android-processor:${rootProject.daggerVersion}"
+
+    //room
+    implementation "android.arch.persistence.room:rxjava2:${rootProject.rxRoomVersion}"
+    implementation "android.arch.persistence.room:runtime:${rootProject.rxRoomVersion}"
+    kapt "android.arch.persistence.room:compiler:${rootProject.rxRoomVersion}"
 
     // rx
     implementation "io.reactivex.rxjava2:rxandroid:${rootProject.rxAndroid}"

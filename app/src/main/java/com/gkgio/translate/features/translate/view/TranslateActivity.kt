@@ -11,12 +11,7 @@ import com.gkgio.translate.base.BaseActivity
 import com.gkgio.translate.data.model.KeyValueItem
 import com.gkgio.translate.features.translate.presenter.TranslatePresenter
 import com.gkgio.translate.features.translate.presenter.TranslatePresenterImpl
-import com.gkgio.translate.helpers.utils.giveHashMapRandomElement
-import com.gkgio.translate.helpers.utils.hideKeyboard
-
-import com.gkgio.translate.helpers.utils.showErrorAlertDialog
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.gkgio.translate.helpers.utils.*
 import com.jakewharton.rxbinding2.widget.RxTextView
 import java.util.*
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -77,9 +72,7 @@ class TranslateActivity : BaseActivity(), TranslateView, FullBottomSheetDialogFr
     }
 
     val languagesJsonString = intent.getStringExtra(ARG_LANGUAGES_AVAILABLE)
-    val gson = Gson()
-    val languagesMapType = object : TypeToken<HashMap<String, String>>() {}.type
-    languagesMap = gson.fromJson(languagesJsonString, languagesMapType)
+    languagesMap = hashMapFromJson(languagesJsonString)
 
     val languagesMap = languagesMap
     if (languagesMap != null) {
@@ -147,8 +140,7 @@ class TranslateActivity : BaseActivity(), TranslateView, FullBottomSheetDialogFr
       languagesMap.forEach { (key, value) ->
         listKeyValue.add(KeyValueItem(key, value))
       }
-      val gson = Gson()
-      val keyValueListString = gson.toJson(listKeyValue)
+      val keyValueListString = convertToJson(listKeyValue)
       val fullBottomSheetDialogFragment = FullBottomSheetDialogFragment
           .getInstance(keyValueListString, isFromLanguage, this, supportFragmentManager)
       fullBottomSheetDialogFragment.show(supportFragmentManager, "dialogSheet")

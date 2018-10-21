@@ -11,6 +11,8 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.gkgio.translate.R
 import com.gkgio.translate.data.model.KeyValueItem
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -53,13 +55,27 @@ fun Activity?.hideKeyboard() {
   val view = this?.currentFocus
   if (view != null) {
     val imm = this?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-    imm?.hideSoftInputFromWindow(view.windowToken,  InputMethodManager.HIDE_NOT_ALWAYS)
+    imm?.hideSoftInputFromWindow(view.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
   }
 }
 
 fun Activity?.hideKeyboard(view: View?) {
   if (view != null) {
     val imm = this?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-    imm?.hideSoftInputFromWindow(view.windowToken,  InputMethodManager.HIDE_NOT_ALWAYS)
+    imm?.hideSoftInputFromWindow(view.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
   }
+}
+
+fun convertToJson(value: Any?): String {
+  return Gson().toJson(value)
+}
+
+fun hashMapFromJson(value: String): HashMap<String, String> {
+  val hashMapType = object : TypeToken<HashMap<String, String>>() {}.type
+  return Gson().fromJson<HashMap<String, String>>(value, hashMapType)
+}
+
+fun keyValueItemsFromJson(value: String): List<KeyValueItem> {
+  val keyValueListType = object : TypeToken<List<KeyValueItem>>() {}.type
+  return Gson().fromJson<List<KeyValueItem>>(value, keyValueListType)
 }

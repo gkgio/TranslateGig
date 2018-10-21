@@ -8,9 +8,8 @@ import com.gkgio.translate.base.BaseActivity
 import com.gkgio.translate.features.splash.presenter.SplashPresenter
 import com.gkgio.translate.features.splash.presenter.SplashPresenterImpl
 import com.gkgio.translate.features.translate.view.TranslateActivity
+import com.gkgio.translate.helpers.utils.convertToJson
 import com.gkgio.translate.helpers.utils.showErrorAlertDialog
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import java.util.HashMap
 
 class SplashActivity : BaseActivity(), SplashView {
@@ -29,8 +28,7 @@ class SplashActivity : BaseActivity(), SplashView {
   }
 
   override fun openTranslateActivity(languages: HashMap<String, String>) {
-    val languagesMapType = object : TypeToken<HashMap<String, String>>() {}.type
-    val languagesJsonString = Gson().toJson(languages, languagesMapType)
+    val languagesJsonString = convertToJson(languages)
     val intent = Intent(this, TranslateActivity::class.java)
     intent.putExtra(TranslateActivity.ARG_LANGUAGES_AVAILABLE, languagesJsonString)
     startActivity(intent)
